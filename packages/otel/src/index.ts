@@ -1,17 +1,19 @@
 import type { Span, SpanOptions } from '@opentelemetry/api';
 import {
+  DiagConsoleLogger,
+  DiagLogLevel,
+  SpanStatusCode,
   context,
   diag,
   trace,
-  DiagConsoleLogger,
-  DiagLogLevel,
-  SpanStatusCode
 } from '@opentelemetry/api';
-import { defaultResource, resourceFromAttributes } from '@opentelemetry/resources';
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { defaultResource, resourceFromAttributes } from '@opentelemetry/resources';
 import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import type { NodeSDKConfiguration } from '@opentelemetry/sdk-node';
+
 import type { PolicyDecision } from '@abcp/types';
 
 /**
@@ -42,7 +44,7 @@ export interface PolicySpanAttributes {
 
 const defaultResourceAttributes: Record<string, string> = {
   'service.namespace': 'abcp',
-  'service.instance.id': process.env.HOSTNAME ?? 'local'
+  'service.instance.id': process.env.HOSTNAME ?? 'local',
 };
 
 export const GEN_AI_ATTRIBUTE_KEYS = {
@@ -50,7 +52,7 @@ export const GEN_AI_ATTRIBUTE_KEYS = {
   operationName: 'gen_ai.operation.name',
   outputType: 'gen_ai.output.type',
   toolName: 'gen_ai.tool.name',
-  providerName: 'gen_ai.provider.name'
+  providerName: 'gen_ai.provider.name',
 } as const;
 
 /**
@@ -69,8 +71,8 @@ export const createTelemetrySdk = (options: TelemetryOptions): NodeSDK => {
       'service.name': options.serviceName,
       'service.version': options.serviceVersion ?? '0.1.0',
       'deployment.environment': options.environment ?? process.env.NODE_ENV ?? 'development',
-      ...options.resourceAttributes
-    })
+      ...options.resourceAttributes,
+    }),
   );
 
   const traceExporter =
@@ -83,20 +85,23 @@ export const createTelemetrySdk = (options: TelemetryOptions): NodeSDK => {
       ? undefined
       : new OTLPMetricExporter({ url: `${options.otlpEndpoint}/v1/metrics` });
 
-  const metricReader =
-    metricExporter === undefined
-      ? undefined
-      : new PeriodicExportingMetricReader({
-          exporter: metricExporter,
-          exportIntervalMillis: 15_000
-        });
-
-  return new NodeSDK({
+  const sdkConfig: Partial<NodeSDKConfiguration> = {
     resource,
-    traceExporter,
-    metricReader,
-    autoDetectResources: true
-  });
+    autoDetectResources: true,
+  };
+
+  if (traceExporter !== undefined) {
+    sdkConfig.traceExporter = traceExporter;
+  }
+
+  if (metricExporter !== undefined) {
+    sdkConfig.metricReader = new PeriodicExportingMetricReader({
+      exporter: metricExporter,
+      exportIntervalMillis: 15_000,
+    });
+  }
+
+  return new NodeSDK(sdkConfig);
 };
 
 /**
@@ -106,7 +111,7 @@ export const withGenAiSpan = async <T>(
   name: string,
   attributes: GenAiSpanAttributes,
   fn: (span: Span) => Promise<T>,
-  spanOptions: SpanOptions = {}
+  spanOptions: SpanOptions = {},
 ): Promise<T> => {
   const tracer = trace.getTracer('abcp');
 
@@ -125,8 +130,8 @@ export const withGenAiSpan = async <T>(
           ? { [GEN_AI_ATTRIBUTE_KEYS.providerName]: attributes.providerName }
           : {}),
         'abcp.operation.task': attributes.operationName,
-        ...attributes.additionalAttributes
-      }
+        ...attributes.additionalAttributes,
+      },
     },
     async (span) => {
       try {
@@ -136,14 +141,14 @@ export const withGenAiSpan = async <T>(
       } catch (error) {
         span.setStatus({
           code: SpanStatusCode.ERROR,
-          message: error instanceof Error ? error.message : 'Unknown error'
+          message: error instanceof Error ? error.message : 'Unknown error',
         });
         span.recordException(error as Error);
         throw error;
       } finally {
         span.end();
       }
-    }
+    },
   );
 };
 
@@ -151,7 +156,7 @@ export const withPolicySpan = async <T>(
   name: string,
   attributes: PolicySpanAttributes,
   fn: (span: Span) => Promise<T>,
-  spanOptions: SpanOptions = {}
+  spanOptions: SpanOptions = {},
 ): Promise<T> =>
   withGenAiSpan(
     name,
@@ -163,14 +168,16 @@ export const withPolicySpan = async <T>(
         'abcp.policy.verdict': attributes.decision.verdict,
         'abcp.policy.reason': attributes.decision.reason,
         'abcp.policy.run_id': attributes.decision.runId,
-        ...(attributes.decision.actionId ? { 'abcp.policy.action_id': attributes.decision.actionId } : {}),
+        ...(attributes.decision.actionId
+          ? { 'abcp.policy.action_id': attributes.decision.actionId }
+          : {}),
         ...(attributes.policyLatencyMs !== undefined
           ? { 'abcp.policy.latency_ms': attributes.policyLatencyMs }
-          : {})
-      }
+          : {}),
+      },
     },
     fn,
-    spanOptions
+    spanOptions,
   );
 
 /**

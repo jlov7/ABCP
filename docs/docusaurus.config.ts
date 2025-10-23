@@ -7,7 +7,11 @@ const config: Config = {
   url: 'https://example.com',
   baseUrl: '/',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
   favicon: 'img/favicon.ico',
   organizationName: 'abcp',
   projectName: 'docs',
@@ -16,34 +20,32 @@ const config: Config = {
       'classic',
       {
         docs: {
-          sidebarPath: './sidebars.ts'
+          sidebarPath: './sidebars.ts',
         },
         blog: false,
         theme: {
-          customCss: './src/css/custom.css'
-        }
-      }
-    ]
+          customCss: './src/css/custom.css',
+        },
+      },
+    ],
   ],
   themeConfig: {
     colorMode: {
-      defaultMode: 'dark'
+      defaultMode: 'dark',
     },
     navbar: {
       title: 'ABCP R&D',
-      items: [
-        { to: '/docs/intro', label: 'Documentation', position: 'left' }
-      ]
+      items: [{ to: '/docs/intro', label: 'Documentation', position: 'left' }],
     },
     prism: {
       theme: prismThemes.dracula,
-      darkTheme: prismThemes.dracula
+      darkTheme: prismThemes.dracula,
     },
     announcementBar: {
       id: 'r-and-d',
-      content: 'Personal R&D project — not a product. Signed provenance and disclosures included.'
-    }
-  }
+      content: 'Personal R&D project — not a product. Signed provenance and disclosures included.',
+    },
+  },
 };
 
 export default config;

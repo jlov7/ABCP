@@ -1,14 +1,15 @@
-import EventEmitter from 'eventemitter3';
+import { randomUUID } from 'node:crypto';
+import { EventEmitter } from 'node:events';
 import WebSocket from 'ws';
-import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
+
 import type { JsonValue } from '@abcp/types';
 
 const jsonRpcRequestSchema = z.object({
   jsonrpc: z.literal('2.0'),
   id: z.union([z.string(), z.number()]).optional(),
   method: z.string(),
-  params: z.unknown().optional()
+  params: z.unknown().optional(),
 });
 
 const jsonRpcResponseSchema = z.object({
@@ -19,9 +20,9 @@ const jsonRpcResponseSchema = z.object({
     .object({
       code: z.number(),
       message: z.string(),
-      data: z.unknown().optional()
+      data: z.unknown().optional(),
     })
-    .optional()
+    .optional(),
 });
 
 const notificationSchema = jsonRpcRequestSchema.omit({ id: true });
@@ -55,20 +56,19 @@ export interface InvokeToolPayload {
   arguments?: JsonValue;
 }
 
-export interface McpEventMap {
-  open: () => void;
-  close: (code: number, reason: Buffer) => void;
-  error: (error: Error) => void;
-  notification: (notification: JsonRpcNotification) => void;
-}
+type McpEventMap = {
+  open: [];
+  close: [code: number, reason: Buffer];
+  error: [error: Error];
+  notification: [notification: JsonRpcNotification];
+};
 
-export class McpClient extends EventEmitter<McpEventMap> {
-  private socket?: WebSocket;
+export class McpClient extends EventEmitter {
+  private socket: WebSocket | undefined;
   private readonly options: Required<Omit<McpClientOptions, 'headers'>>;
-  private readonly headers?: Record<string, string>;
+  private readonly headers: Record<string, string> | undefined;
   private reconnectAttempts = 0;
   private readonly pending = new Map<string | number, PendingRequest>();
-  private openPromise?: Promise<void>;
 
   constructor(options: McpClientOptions) {
     super();
@@ -77,7 +77,7 @@ export class McpClient extends EventEmitter<McpEventMap> {
       url: options.url,
       reconnect: options.reconnect ?? true,
       reconnectAttempts: options.reconnectAttempts ?? 5,
-      reconnectIntervalMs: options.reconnectIntervalMs ?? 1_000
+      reconnectIntervalMs: options.reconnectIntervalMs ?? 1_000,
     };
   }
 
@@ -87,9 +87,8 @@ export class McpClient extends EventEmitter<McpEventMap> {
     }
 
     await new Promise<void>((resolve, reject) => {
-      const socket = new WebSocket(this.options.url, {
-        headers: this.headers
-      });
+      const socketOptions = this.headers ? { headers: this.headers } : undefined;
+      const socket = new WebSocket(this.options.url, socketOptions);
 
       this.socket = socket;
 
@@ -130,12 +129,12 @@ export class McpClient extends EventEmitter<McpEventMap> {
 
   async call<T = unknown>(method: string, params?: JsonValue, timeoutMs = 10_000): Promise<T> {
     const socket = await this.waitForSocket(timeoutMs);
-    const id = uuidv4();
+    const id = randomUUID();
     const request: JsonRpcRequest = {
       jsonrpc: '2.0',
       id,
       method,
-      params
+      params,
     };
 
     const payload = JSON.stringify(request);
@@ -146,7 +145,11 @@ export class McpClient extends EventEmitter<McpEventMap> {
         reject(new Error(`MCP request timed out: ${method}`));
       }, timeoutMs);
 
-      this.pending.set(id, { resolve, reject, timeout });
+      this.pending.set(id, {
+        resolve: (value) => resolve(value as T),
+        reject,
+        timeout,
+      });
       socket.send(payload, (error) => {
         if (error) {
           clearTimeout(timeout);
@@ -164,7 +167,7 @@ export class McpClient extends EventEmitter<McpEventMap> {
     const notification: JsonRpcNotification = {
       jsonrpc: '2.0',
       method,
-      params
+      params,
     };
 
     socket.send(JSON.stringify(notification));
@@ -175,15 +178,15 @@ export class McpClient extends EventEmitter<McpEventMap> {
       tool: {
         name: tool.name,
         description: tool.description,
-        input_schema: tool.inputSchema
-      }
+        input_schema: tool.inputSchema,
+      },
     });
   }
 
   async invokeTool<T = unknown>(payload: InvokeToolPayload): Promise<T> {
     return this.call<T>('tools/call', {
       name: payload.name,
-      arguments: payload.arguments
+      arguments: payload.arguments,
     });
   }
 
@@ -204,7 +207,10 @@ export class McpClient extends EventEmitter<McpEventMap> {
       throw new Error('MCP client is not connected.');
     }
 
-    const waitTimeout = Math.max(timeoutMs, this.options.reconnectAttempts * this.options.reconnectIntervalMs + 500);
+    const waitTimeout = Math.max(
+      timeoutMs,
+      this.options.reconnectAttempts * this.options.reconnectIntervalMs + 500,
+    );
 
     await new Promise<void>((resolve, reject) => {
       const timeout = setTimeout(() => {
@@ -256,11 +262,11 @@ export class McpClient extends EventEmitter<McpEventMap> {
     if (response.error) {
       pending.reject(
         new Error(`${response.error.message} (code=${response.error.code})`, {
-          cause: response.error.data
-        })
+          cause: response.error.data,
+        }),
       );
     } else {
-      pending.resolve(response.result);
+      pending.resolve(response.result ?? null);
     }
   }
 
@@ -281,5 +287,30 @@ export class McpClient extends EventEmitter<McpEventMap> {
     setTimeout(() => {
       void this.connect().catch((error) => this.emit('error', error));
     }, this.options.reconnectIntervalMs);
+  }
+
+  public override on<T extends keyof McpEventMap>(
+    event: T,
+    listener: (...args: McpEventMap[T]) => void,
+  ): this {
+    return super.on(event, listener);
+  }
+
+  public override once<T extends keyof McpEventMap>(
+    event: T,
+    listener: (...args: McpEventMap[T]) => void,
+  ): this {
+    return super.once(event, listener);
+  }
+
+  public override off<T extends keyof McpEventMap>(
+    event: T,
+    listener: (...args: McpEventMap[T]) => void,
+  ): this {
+    return super.off(event, listener);
+  }
+
+  public override emit<T extends keyof McpEventMap>(event: T, ...args: McpEventMap[T]): boolean {
+    return super.emit(event, ...args);
   }
 }

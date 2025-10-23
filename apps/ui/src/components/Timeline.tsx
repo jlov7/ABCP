@@ -1,4 +1,7 @@
+import type { ReactElement } from 'react';
+
 import type { ActionEvent, Observation, PolicyDecision } from '@abcp/types';
+
 import styles from './Timeline.module.css';
 
 export interface TimelineProps {
@@ -7,7 +10,7 @@ export interface TimelineProps {
   decisions: PolicyDecision[];
 }
 
-export function Timeline({ actions, observations, decisions }: TimelineProps): JSX.Element {
+export function Timeline({ actions, observations, decisions }: TimelineProps): ReactElement {
   const events = actions.map((action) => {
     const decision = decisions.find((item) => item.actionId === action.id);
     const observation = observations.find((item) => item.actionId === action.id);
@@ -15,7 +18,7 @@ export function Timeline({ actions, observations, decisions }: TimelineProps): J
     return {
       action,
       decision,
-      observation
+      observation,
     };
   });
 

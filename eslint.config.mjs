@@ -1,8 +1,10 @@
 import js from '@eslint/js';
+import next from 'eslint-config-next';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
+  ...next(),
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {

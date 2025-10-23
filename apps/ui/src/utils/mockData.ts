@@ -22,19 +22,19 @@ export const createMockTimelineData = (): TimelineData => {
         agent: {
           id: crypto.randomUUID(),
           name: 'Baseline Gemini Agent',
-          driver: 'gemini-computer-use'
+          driver: 'gemini-computer-use',
         },
         context: {
-          idempotencyKey: crypto.randomUUID()
+          idempotencyKey: crypto.randomUUID(),
         },
         target: {
-          url: 'https://example.com'
+          url: 'https://example.com',
         },
         payload: {
-          type: 'navigate'
+          type: 'navigate',
         },
-        status: 'succeeded'
-      }
+        status: 'succeeded',
+      },
     ],
     decisions: [
       {
@@ -44,8 +44,8 @@ export const createMockTimelineData = (): TimelineData => {
         policyId: 'policy::baseline-allow',
         verdict: 'allow',
         reason: 'Baseline rule allow',
-        timestamp
-      }
+        timestamp,
+      },
     ],
     observations: [
       {
@@ -54,11 +54,12 @@ export const createMockTimelineData = (): TimelineData => {
         actionId,
         timestamp,
         type: 'log',
-        contentType: 'application/json',
+        contentType: 'text/plain',
         dataRef: 'inline://observation',
-        text: 'Gemini Computer Use navigated to https://example.com/login'
-      }
+        redacted: false,
+        text: 'Gemini Computer Use navigated to https://example.com/login',
+      },
     ],
-    evidenceAvailable: true
+    evidenceAvailable: true,
   };
 };

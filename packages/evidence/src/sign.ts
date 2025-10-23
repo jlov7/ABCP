@@ -1,10 +1,10 @@
+import fetch from 'node-fetch';
 import { spawn } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
 import { createWriteStream } from 'node:fs';
 import { promises as fsp } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import fetch from 'node-fetch';
-import { randomUUID } from 'node:crypto';
 import { pipeline } from 'node:stream/promises';
 import { URL } from 'node:url';
 
@@ -21,14 +21,18 @@ export interface SignResult {
   rekorEntryUrl?: string;
 }
 
-const runCommand = async (command: string, args: string[], env?: NodeJS.ProcessEnv): Promise<void> =>
+const runCommand = async (
+  command: string,
+  args: string[],
+  env?: NodeJS.ProcessEnv,
+): Promise<void> =>
   new Promise((resolve, reject) => {
     const child = spawn(command, args, {
       stdio: 'inherit',
       env: {
         ...process.env,
-        ...env
-      }
+        ...env,
+      },
     });
 
     child.on('error', (error) => reject(error));
@@ -46,7 +50,14 @@ export const signEvidenceBundle = async (options: SignOptions): Promise<SignResu
   const attestationPath =
     options.outputBundlePath ?? join(tmpdir(), `abcp-evidence-${randomUUID()}.intoto.jsonl`);
 
-  const args = ['attest', '--type', 'abcp-evidence', '--predicate', options.bundlePath, '--upload=false'];
+  const args = [
+    'attest',
+    '--type',
+    'abcp-evidence',
+    '--predicate',
+    options.bundlePath,
+    '--upload=false',
+  ];
 
   if (options.identityToken) {
     args.push('--identity-token', options.identityToken);
@@ -60,10 +71,12 @@ export const signEvidenceBundle = async (options: SignOptions): Promise<SignResu
 
   await runCommand(cosignBinary, args);
 
-  return {
-    attestationPath,
-    rekorEntryUrl: options.rekorUrl
-  };
+  return options.rekorUrl
+    ? {
+        attestationPath,
+        rekorEntryUrl: options.rekorUrl,
+      }
+    : { attestationPath };
 };
 
 export interface RekorPublishOptions {
@@ -72,7 +85,7 @@ export interface RekorPublishOptions {
 }
 
 export const publishRekorEntry = async (
-  options: RekorPublishOptions
+  options: RekorPublishOptions,
 ): Promise<{ rekorEntryUrl: string }> => {
   const rekorUrl = options.rekorUrl ?? 'https://rekor.sigstore.dev';
   const url = new URL('/api/v1/log/entries', rekorUrl);
@@ -81,8 +94,8 @@ export const publishRekorEntry = async (
     method: 'POST',
     body: await fsp.readFile(options.attestationPath),
     headers: {
-      'Content-Type': 'application/json'
-    }
+      'Content-Type': 'application/json',
+    },
   });
 
   if (!response.ok) {
@@ -116,7 +129,7 @@ export const verifyEvidenceBundle = async (options: VerifyOptions): Promise<bool
     '--bundle',
     options.attestationPath,
     '--output',
-    outputPath
+    outputPath,
   ]);
 
   const content = await fsp.readFile(outputPath, 'utf8');
@@ -134,5 +147,10 @@ export const downloadEvidenceBundle = async (options: EvidenceDownloadOptions): 
     throw new Error(`Failed to download evidence bundle: ${response.status}`);
   }
 
-  await pipeline(response.body, createWriteStream(options.destination));
+  const body = response.body;
+  if (body === null) {
+    throw new Error('Response did not include a body to download.');
+  }
+
+  await pipeline(body as unknown as NodeJS.ReadableStream, createWriteStream(options.destination));
 };

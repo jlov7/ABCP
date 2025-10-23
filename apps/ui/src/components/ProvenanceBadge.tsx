@@ -1,10 +1,12 @@
+import type { ReactElement } from 'react';
+
 import styles from './ProvenanceBadge.module.css';
 
 interface ProvenanceBadgeProps {
   evidenceAvailable: boolean;
 }
 
-export function ProvenanceBadge({ evidenceAvailable }: ProvenanceBadgeProps): JSX.Element {
+export function ProvenanceBadge({ evidenceAvailable }: ProvenanceBadgeProps): ReactElement {
   return (
     <span
       className={styles.badge}

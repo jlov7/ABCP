@@ -47,14 +47,14 @@
   gap: 4px;
 }
 
-dt {
+.details dt {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: rgba(148, 163, 184, 0.9);
 }
 
-dd {
+.details dd {
   margin: 0;
   font-size: 0.95rem;
   color: #e2e8f0;

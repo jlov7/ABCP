@@ -8,7 +8,13 @@
     "moduleResolution": "NodeNext",
     "module": "NodeNext",
     "types": ["node"],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@abcp/types": ["../../packages/types/dist/index.d.ts"],
+      "@abcp/otel": ["../../packages/otel/dist/index.d.ts"],
+      "@abcp/mcp": ["../../packages/mcp/dist/index.d.ts"],
+      "@abcp/evidence": ["../../packages/evidence/dist/index.d.ts"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.test.ts", "vitest.config.ts", "scripts/**/*.ts"],
   "exclude": ["dist", "node_modules"]

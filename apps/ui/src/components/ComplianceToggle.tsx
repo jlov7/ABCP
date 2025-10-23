@@ -1,4 +1,8 @@
+'use client';
+
 import { useState } from 'react';
+import type { ReactElement } from 'react';
+
 import styles from './ComplianceToggle.module.css';
 
 interface ComplianceToggleProps {
@@ -6,7 +10,7 @@ interface ComplianceToggleProps {
   description: string;
 }
 
-export function ComplianceToggle({ label, description }: ComplianceToggleProps): JSX.Element {
+export function ComplianceToggle({ label, description }: ComplianceToggleProps): ReactElement {
   const [enabled, setEnabled] = useState(true);
 
   return (

@@ -4,7 +4,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "lib": ["ES2022"]
+    "lib": ["ES2022"],
+    "module": "NodeNext"
   },
   "include": ["src/**/*.ts", "vitest.config.ts", "src/**/*.test.ts"],
   "exclude": ["dist", "node_modules"]

@@ -1,10 +1,12 @@
-import { Timeline } from '@/components/Timeline';
-import { ProvenanceBadge } from '@/components/ProvenanceBadge';
 import { ComplianceToggle } from '@/components/ComplianceToggle';
+import { ProvenanceBadge } from '@/components/ProvenanceBadge';
+import { Timeline } from '@/components/Timeline';
 import { createMockTimelineData } from '@/utils/mockData';
+import type { ReactElement } from 'react';
+
 import styles from './page.module.css';
 
-export default function Home(): JSX.Element {
+export default function Home(): ReactElement {
   const data = createMockTimelineData();
 
   return (
@@ -12,7 +14,9 @@ export default function Home(): JSX.Element {
       <header className={styles.header}>
         <div>
           <h1>Agentic Browser Control Plane</h1>
-          <p className={styles.tagline}>Personal R&D • Observability • Provenance • Accessibility</p>
+          <p className={styles.tagline}>
+            Personal R&D • Observability • Provenance • Accessibility
+          </p>
         </div>
         <ProvenanceBadge evidenceAvailable={data.evidenceAvailable} />
       </header>

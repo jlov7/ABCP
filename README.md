@@ -36,6 +36,28 @@ pnpm dev
 - `apps/ui`: `pnpm --filter ui dev`
 - `docs`: `pnpm --filter docs docs:dev`
 
+## REST API Highlights
+
+- `POST /runs` — create a new agent run (supply `driver`)
+- `POST /runs/:runId/actions` — submit an action event for execution
+- `GET /runs/:runId/summary` — aggregate run metadata, policy decisions, observations, and evidence bundle pointers in a single response
+
+## Evaluation Harnesses
+
+Run reproducible BrowserGym/WebArena suites via `uv`:
+
+```bash
+# BrowserGym
+cd eval/browsergym
+uv sync
+uv run python -m eval_runner tasks/sample_login.json
+
+# WebArena
+cd ../webarena
+uv sync
+uv run python -m eval_runner --suite tasks/sample_suite.json
+```
+
 ## Ethos & Guardrails
 
 - **Prime directives:** correctness & tests → security & provenance → accessibility & UX → maintainability → performance.
