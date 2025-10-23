@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "NodeNext",
+    "moduleDetection": "force",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "importHelpers": true,
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@abcp/types": ["packages/types/src"],
+      "@abcp/types/*": ["packages/types/src/*"],
+      "@abcp/otel": ["packages/otel/src"],
+      "@abcp/otel/*": ["packages/otel/src/*"],
+      "@abcp/mcp": ["packages/mcp/src"],
+      "@abcp/mcp/*": ["packages/mcp/src/*"],
+      "@abcp/evidence": ["packages/evidence/src"],
+      "@abcp/evidence/*": ["packages/evidence/src/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "build", ".turbo"]
+}

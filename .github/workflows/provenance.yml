@@ -1,0 +1,26 @@
+name: Build Provenance
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  attest:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - run: pnpm install
+      - run: pnpm --filter @abcp/control-plane build
+      - uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: 'apps/control-plane/dist/**'

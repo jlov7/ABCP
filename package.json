@@ -1,0 +1,45 @@
+{
+  "name": "abcp-rnd",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agentic Browser Control Plane (Personal R&D) — standards-first control plane for observing, explaining, and governing agentic web actions.",
+  "author": "Jason Lovell",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.11.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "prepare": "test -d .git && lefthook install || true",
+    "clean": "turbo prune --scope=abcp-rnd --out-dir .turbo-prune && rm -rf node_modules pnpm-lock.yaml .turbo",
+    "format": "turbo run format",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "coverage": "turbo run coverage",
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "storybook": "turbo run storybook --filter=ui",
+    "e2e": "turbo run e2e",
+    "docs:dev": "turbo run docs:dev --filter=docs",
+    "docs:build": "turbo run docs:build --filter=docs",
+    "docs:serve": "turbo run docs:serve --filter=docs",
+    "release": "release-please release-pr"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "@types/node": "^22.7.5",
+    "lefthook": "^1.7.10",
+    "lint-staged": "^15.2.10",
+    "release-please": "^16.4.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.1.1",
+    "prettier": "^3.3.3",
+    "turbo": "^2.1.0",
+    "typescript": "^5.6.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
+  }
+}

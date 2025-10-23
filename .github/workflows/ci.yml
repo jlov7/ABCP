@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install
+      - run: pnpm --filter @abcp/types test
+      - run: pnpm --filter @abcp/mcp test
+      - run: pnpm --filter @abcp/evidence test
+      - run: pnpm --filter @abcp/otel test
+      - run: pnpm --filter @abcp/control-plane test
+      - run: pnpm --filter @abcp/ui test

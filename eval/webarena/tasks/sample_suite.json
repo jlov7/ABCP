@@ -1,0 +1,11 @@
+{
+  "suite": "sample",
+  "tasks": [
+    {
+      "id": "webarena-sample-nav",
+      "description": "Navigate to the dashboard page",
+      "startUrl": "https://example.com/dashboard",
+      "successPhrase": "navigated to https://example.com/dashboard"
+    }
+  ]
+}
