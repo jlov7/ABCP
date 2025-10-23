@@ -1,24 +1,44 @@
 name: CI
 
 on:
-  pull_request:
   push:
     branches:
-      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   lint-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22]
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
-      - uses: actions/setup-node@v6
+          run_install: false
+      - name: Restore turbo cache
+        uses: actions/cache@v4
         with:
-          node-version: 20
-          cache: pnpm
-      - run: pnpm install
+          path: |
+            .turbo
+            node_modules/.cache/turbo
+            ~/.cache/turbo
+          key: turbo-${{ runner.os }}-${{ matrix.node }}-${{ hashFiles('pnpm-lock.yaml', 'turbo.json') }}
+          restore-keys: |
+            turbo-${{ runner.os }}-${{ matrix.node }}-
+            turbo-${{ runner.os }}-
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @abcp/types test
       - run: pnpm --filter @abcp/mcp test
       - run: pnpm --filter @abcp/evidence test

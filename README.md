@@ -1,5 +1,11 @@
 # Agentic Browser Control Plane (ABCP — Personal R&D)
 
+[![CI](https://github.com/jlov7/ABCP/actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
+[![CodeQL](https://github.com/jlov7/ABCP/actions/workflows/codeql.yml/badge.svg)](../../actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://github.com/jlov7/ABCP/actions/workflows/scorecard.yml/badge.svg)](../../actions/workflows/scorecard.yml)
+[![Docs](https://github.com/jlov7/ABCP/actions/workflows/docs.yml/badge.svg)](../../actions/workflows/docs.yml)
+[![Storybook](https://github.com/jlov7/ABCP/actions/workflows/storybook.yml/badge.svg)](../../actions/workflows/storybook.yml)
+
 > **Personal R&D. Not a product.**  
 > ABCP is an engineering playground for building a standards-first control plane that observes, explains, and governs agentic browser actions across Gemini Computer Use, AWS Bedrock AgentCore, and ChatGPT Atlas overlay surfaces.
 

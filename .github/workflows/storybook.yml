@@ -1,21 +1,36 @@
 name: Storybook
 
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'apps/ui/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
   pull_request:
     paths:
       - 'apps/ui/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
-      - run: pnpm install
+          cache-dependency-path: pnpm-lock.yaml
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @abcp/ui storybook:build

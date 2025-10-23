@@ -1,26 +1,34 @@
 name: Build Provenance
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types:
+      - published
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  attestations: write
+  contents: read
 
 jobs:
   attest:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
-      - run: pnpm install
-      - run: pnpm --filter @abcp/control-plane build
+          run_install: false
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -w build
       - uses: actions/attest-build-provenance@v1
         with:
-          subject-path: 'apps/control-plane/dist/**'
+          subject-path: |
+            dist/**/*
+            packages/**/dist/**/*
