@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: Cite this project if you use it for research.
+title: Agentic Browser Control Plane (Personal R&D)
+abstract: >
+  ABCP (Agentic Browser Control Plane) is a standards-first research project
+  that captures, governs, and explains agentic web interactions with
+  provenance, observability, and accessibility baked in.
+authors:
+  - family-names: Lovell
+    given-names: Jason
+    affiliation: Independent Researcher
+    orcid: https://orcid.org/0000-0000-0000-0000
+repository-code: https://github.com/jasonlovell/abcp-rnd
+license: Apache-2.0
+version: 0.1.0
+date-released: 2024-12-01
+keywords:
+  - agentic systems
+  - browser automation
+  - observability
+  - provenance
+  - accessibility

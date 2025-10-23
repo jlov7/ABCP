@@ -1,0 +1,12 @@
+{
+  "id": "sample-login",
+  "description": "Validate login form submission on example site.",
+  "startUrl": "https://example.com/login",
+  "successCriteria": [
+    "Gemini Computer Use navigated to"
+  ],
+  "timeouts": {
+    "action": 30,
+    "task": 180
+  }
+}

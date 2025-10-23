@@ -1,0 +1,9 @@
+* text=auto eol=lf
+
+*.sh linguist-language=Shell
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TypeScript
+*.py linguist-language=Python
+
+docs/static/** binary
+*.snap text

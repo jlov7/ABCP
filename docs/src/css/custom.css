@@ -1,0 +1,24 @@
+:root {
+  --ifm-color-primary: #6366f1;
+  --ifm-color-primary-dark: #4f46e5;
+  --ifm-background-color: #05070f;
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.hero {
+  padding: 6rem 0;
+  background: radial-gradient(circle at top left, #0f172a 0%, #05070f 100%);
+  color: #f8fafc;
+  text-align: center;
+}
+
+.hero .subtitle {
+  color: rgba(148, 163, 184, 0.9);
+}
+
+.hero .cta {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}

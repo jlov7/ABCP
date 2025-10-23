@@ -1,0 +1,44 @@
+{
+  "name": "@abcp/types",
+  "version": "0.1.0",
+  "description": "Shared TypeScript and Zod contracts for the Agentic Browser Control Plane (Personal R&D).",
+  "license": "Apache-2.0",
+  "author": "Jason Lovell",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./*": "./dist/*.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "lint": "pnpm exec eslint \"src/**/*.{ts,tsx}\"",
+    "test": "vitest run",
+    "test:watch": "vitest watch",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "zod": "^3.23.8",
+    "type-fest": "^4.20.1"
+  },
+  "devDependencies": {
+    "tsup": "^8.1.0",
+    "vitest": "^2.1.1",
+    "@vitest/coverage-v8": "^2.1.1",
+    "typescript": "^5.6.3",
+    "eslint": "^9.11.1",
+    "@typescript-eslint/parser": "^8.11.0",
+    "@typescript-eslint/eslint-plugin": "^8.11.0"
+  }
+}

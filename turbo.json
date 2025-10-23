@@ -1,0 +1,51 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    ".env.local",
+    ".env"
+  ],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "build/**"]
+    },
+    "dev": {
+      "cache": false
+    },
+    "lint": {
+      "outputs": []
+    },
+    "typecheck": {
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^test"],
+      "outputs": ["coverage/**", "test-results/**"]
+    },
+    "coverage": {
+      "dependsOn": ["test"],
+      "outputs": ["coverage/**"]
+    },
+    "format": {
+      "outputs": []
+    },
+    "storybook": {
+      "dependsOn": ["^storybook"],
+      "outputs": ["storybook-static/**"]
+    },
+    "docs:build": {
+      "dependsOn": ["^docs:build"],
+      "outputs": ["build/**"]
+    },
+    "docs:dev": {
+      "cache": false
+    },
+    "docs:serve": {
+      "cache": false
+    },
+    "e2e": {
+      "dependsOn": ["build"],
+      "outputs": ["playwright-report/**", "trace-results/**"]
+    }
+  }
+}
