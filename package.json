@@ -31,7 +31,7 @@
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@types/node": "^22.7.5",
-    "lefthook": "^1.7.10",
+    "lefthook": "^2.0.0",
     "lint-staged": "^15.2.10",
     "release-please": "^16.4.0",
     "@trivago/prettier-plugin-sort-imports": "^5.1.1",
