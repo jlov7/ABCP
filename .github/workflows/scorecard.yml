@@ -11,10 +11,12 @@ on:
 permissions:
   contents: read
   security-events: write
+  id-token: write
 
 jobs:
   analysis:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: ossf/scorecard-action@v2.4.3
         with:
