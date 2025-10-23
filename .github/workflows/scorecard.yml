@@ -9,14 +9,14 @@ on:
       - master
 
 permissions:
-  contents: read
-  security-events: read
-  id-token: write
+  read-all
 
 jobs:
   analysis:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      id-token: write
     steps:
       - uses: ossf/scorecard-action@v2.4.3
         with:
