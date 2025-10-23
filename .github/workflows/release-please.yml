@@ -13,7 +13,15 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_PLEASE_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
     steps:
+      - name: Check for release token
+        if: env.RELEASE_PLEASE_TOKEN == ''
+        run: |
+          echo "RELEASE_PLEASE_TOKEN secret not set; skipping release automation."
       - uses: googleapis/release-please-action@v4
+        if: env.RELEASE_PLEASE_TOKEN != ''
         with:
           release-type: simple
+          token: ${{ env.RELEASE_PLEASE_TOKEN }}
