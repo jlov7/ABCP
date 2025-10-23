@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: read
-  security-events: write
+  security-events: read
   id-token: write
 
 jobs:
