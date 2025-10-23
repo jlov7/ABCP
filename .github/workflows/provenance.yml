@@ -26,8 +26,24 @@ jobs:
       - run: corepack enable
       - run: pnpm install --frozen-lockfile
       - run: pnpm -w build
+      - name: Archive build outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p provenance
+          shopt -s nullglob
+          bundles=()
+          if [[ -d apps/control-plane/dist ]]; then
+            bundles+=("apps/control-plane/dist")
+          fi
+          for dir in packages/*/dist; do
+            bundles+=("$dir")
+          done
+          if [[ ${#bundles[@]} -eq 0 ]]; then
+            echo "No dist bundles found; failing provenance step." >&2
+            exit 1
+          fi
+          tar -czf provenance/dist-bundles.tar.gz "${bundles[@]}"
       - uses: actions/attest-build-provenance@v1
         with:
-          subject-path: |
-            packages/**/dist/**/*
-            apps/control-plane/dist/**/*
+          subject-path: provenance/dist-bundles.tar.gz
