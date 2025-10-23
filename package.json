@@ -30,7 +30,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
-    "@types/node": "^22.7.5",
+    "@types/node": "^24.9.1",
     "lefthook": "^1.7.10",
     "lint-staged": "^15.2.10",
     "release-please": "^16.4.0",
