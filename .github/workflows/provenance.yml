@@ -29,5 +29,5 @@ jobs:
       - uses: actions/attest-build-provenance@v1
         with:
           subject-path: |
-            dist/**/*
             packages/**/dist/**/*
+            apps/control-plane/dist/**/*
