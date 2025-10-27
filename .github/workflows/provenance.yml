@@ -44,6 +44,6 @@ jobs:
             exit 1
           fi
           tar -czf provenance/dist-bundles.tar.gz "${bundles[@]}"
-      - uses: actions/attest-build-provenance@v1
+      - uses: actions/attest-build-provenance@v3
         with:
           subject-path: provenance/dist-bundles.tar.gz
