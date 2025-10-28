@@ -22,7 +22,7 @@ jobs:
         with:
           results_file: scorecard.json
           publish_results: true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: scorecard
           path: scorecard.json
